@@ -1,0 +1,117 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  phone     String?
+  userType  UserType
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relaciones
+  clientProfile    ClientProfile?
+  professionalProfile ProfessionalProfile?
+  clientConnections Connection[] @relation("ClientConnection")
+  professionalConnections Connection[] @relation("ProfessionalConnection")
+  clientReviews    Review[] @relation("ClientReview")
+  professionalReviews Review[] @relation("ProfessionalReview")
+  payments         Payment[]
+}
+
+model ClientProfile {
+  id       String @id @default(cuid())
+  userId   String @unique
+  location String
+  zone     String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model ProfessionalProfile {
+  id          String @id @default(cuid())
+  userId      String @unique
+  profession  String
+  description String?
+  experience  Int?   // años de experiencia
+  location    String
+  zone        String
+  available   Boolean @default(true)
+  user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reviews     Review[]
+}
+
+model Connection {
+  id              String      @id @default(cuid())
+  clientId        String
+  professionalId  String
+  status          ConnectionStatus @default(PENDING)
+  requestDate     DateTime    @default(now())
+  acceptedDate    DateTime?
+  completedDate   DateTime?
+  description     String?
+  client          User        @relation("ClientConnection", fields: [clientId], references: [id])
+  professional    User        @relation("ProfessionalConnection", fields: [professionalId], references: [id])
+  payments        Payment[]
+  reviews         Review[]
+  
+  @@unique([clientId, professionalId])
+}
+
+model Payment {
+  id           String      @id @default(cuid())
+  connectionId String
+  userId       String
+  amount       Float
+  status       PaymentStatus @default(PENDING)
+  paymentDate  DateTime?
+  mercadopagoId String?
+  connection   Connection  @relation(fields: [connectionId], references: [id])
+  user         User        @relation(fields: [userId], references: [id])
+}
+
+model Review {
+  id           String   @id @default(cuid())
+  clientId     String
+  professionalId String
+  connectionId String
+  rating       Int      // 1-5
+  comment      String?
+  createdAt    DateTime @default(now())
+  client       User     @relation("ClientReview", fields: [clientId], references: [id])
+  professional User     @relation("ProfessionalReview", fields: [professionalId], references: [id])
+  connection   Connection @relation(fields: [connectionId], references: [id])
+  professionalProfile ProfessionalProfile @relation(fields: [professionalId], references: [userId])
+  
+  @@unique([connectionId])
+}
+
+enum UserType {
+  CLIENT
+  PROFESSIONAL
+}
+
+enum ConnectionStatus {
+  PENDING
+  ACCEPTED
+  COMPLETED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
