@@ -93,7 +93,7 @@ model Review {
   client       User     @relation("ClientReview", fields: [clientId], references: [id])
   professional User     @relation("ProfessionalReview", fields: [professionalId], references: [id])
   connection   Connection @relation(fields: [connectionId], references: [id])
-  professionalProfile ProfessionalProfile @relation(fields: [professionalId], references: [userId])
+  professionalProfile ProfessionalProfile @relation(fields: [professionalId], references: [userId], map: "Review_professionalProfile_fkey")
   
   @@unique([connectionId])
 }
