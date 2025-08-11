@@ -63,7 +63,7 @@ export default function RegisterClient() {
     setIsSubmitting(true)
     
     try {
-      const response = await fetch("/api/auth/register/client", {
+      const response = await fetch("/api/registration/client", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

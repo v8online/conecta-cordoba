@@ -84,7 +84,7 @@ export default function RegisterProfessional() {
     setIsSubmitting(true)
     
     try {
-      const response = await fetch("/api/auth/register/professional", {
+      const response = await fetch("/api/registration/professional", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
