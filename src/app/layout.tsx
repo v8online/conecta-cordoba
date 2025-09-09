@@ -1,50 +1,50 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
-import { Toaster } from "@/components/ui/toaster";
+  import { Geist, Geist_Mono } from "next/font/google";
+  import "./globals.css";
+  import { Toaster } from "@/components/ui/toaster";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+  const geistSans = Geist({
+    variable: "--font-geist-sans",
+    subsets: ["latin"],
+  }); clone https://github.com/v8online/conecta-cordoba.git
+  cd conecta-cordoba
+  const geistMono = Geist_Mono({
+    variable: "--font-geist-mono",u editor preferido
+    subsets: ["latin"], te mostré
+  });
+  # Commit y push
+  export const metadata: Metadata = {
+    title: "ConectaCórdoba - Conecta con Profesionales Locales",a branding"
+    description: "La plataforma que conecta clientes con profesionales de confianza en todas las zonas de Córdoba. Registro GRATIS para ambos.",
+    keywords: ["ConectaCórdoba", "profesionales", "servicios", "Córdoba", "oficios", "trabajadores", "plomero", "electricista", "albañil"],
+    authors: [{ name: "ConectaCórdoba Team" }],
+    openGraph: {r un bot/script que use tu token personal
+      title: "ConectaCórdoba - Conecta con Profesionales Locales",ca
+      description: "Encuentra profesionales de confianza en Córdoba o ofrece tus servicios",
+      url: "https://conecta-cordoba.vercel.app",ciones o tienes otra idea en mente?
+      siteName: "ConectaCórdoba",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "ConectaCórdoba - Conecta con Profesionales Locales",
+      description: "Encuentra profesionales de confianza en Córdoba o ofrece tus servicios",
+    },
+  };
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-export const metadata: Metadata = {
-  title: "Z.ai Code Scaffold - AI-Powered Development",
-  description: "Modern Next.js scaffold optimized for AI-powered development with Z.ai. Built with TypeScript, Tailwind CSS, and shadcn/ui.",
-  keywords: ["Z.ai", "Next.js", "TypeScript", "Tailwind CSS", "shadcn/ui", "AI development", "React"],
-  authors: [{ name: "Z.ai Team" }],
-  openGraph: {
-    title: "Z.ai Code Scaffold",
-    description: "AI-powered development with modern React stack",
-    url: "https://chat.z.ai",
-    siteName: "Z.ai",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Z.ai Code Scaffold",
-    description: "AI-powered development with modern React stack",
-  },
-};
-
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  return (
-    <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
-      >
-        {children}
-        <Toaster />
-      </body>
-    </html>
-  );
-}
+  export default function RootLayout({
+    children,
+  }: Readonly<{
+    children: React.ReactNode;
+  }>) {
+    return (
+      <html lang="es" suppressHydrationWarning>
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
+        >
+          {children}
+          <Toaster />
+        </body>
+      </html>
+    );
+  }
