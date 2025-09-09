@@ -1,4 +1,4 @@
-// This is your Prisma schema file,
+  // This is your Prisma schema file,
   // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
   // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
@@ -91,9 +91,9 @@
     comment      String?
     createdAt    DateTime @default(now())
     client       User     @relation("ClientReview", fields: [clientId], references: [id])
-    professional User     @relation("ProfessionalReview", fields: [professionalId], references: [id])
+    professional User     @relation("ProfessionalReview", fields: [professionalId], references: [id], map: "Review_professional_User_fkey")
     connection   Connection @relation(fields: [connectionId], references: [id])
-    professionalProfile ProfessionalProfile @relation(fields: [professionalId], references: [id], map: "Review_professionalProfile_fkey")
+    professionalProfile ProfessionalProfile @relation(fields: [professionalId], references: [id], map: "Review_professional_Profile_fkey")
 
     @@unique([connectionId])
   }
