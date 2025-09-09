@@ -50,7 +50,6 @@
     zone        String
     available   Boolean @default(true)
     user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-    reviews     Review[]
   }
 
   model Connection {
@@ -91,9 +90,8 @@
     comment      String?
     createdAt    DateTime @default(now())
     client       User     @relation("ClientReview", fields: [clientId], references: [id])
-    professional User     @relation("ProfessionalReview", fields: [professionalId], references: [id], map: "Review_professional_User_fkey")
+    professional User     @relation("ProfessionalReview", fields: [professionalId], references: [id])
     connection   Connection @relation(fields: [connectionId], references: [id])
-    professionalProfile ProfessionalProfile @relation(fields: [professionalId], references: [id], map: "Review_professional_Profile_fkey")
 
     @@unique([connectionId])
   }
