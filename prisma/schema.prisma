@@ -16,7 +16,7 @@
   model User {
     id        String   @id @default(cuid())
     email     String   @unique
-    password  String
+    password  String?  // Optional: permite usuarios existentes sin password
     name      String?
     phone     String?
     userType  UserType
