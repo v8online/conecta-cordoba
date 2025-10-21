@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
-  import { Geist, Geist_Mono } from "next/font/google";
+  import { StackProvider, StackTheme } from "@stackframe/stack";
+import { stackClientApp } from "../stack/client";
+import { Geist, Geist_Mono } from "next/font/google";
   import "./globals.css";
   import { Toaster } from "@/components/ui/toaster";
 
@@ -41,10 +43,10 @@ import type { Metadata } from "next";
       <html lang="es" suppressHydrationWarning>
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
-        >
+        ><StackProvider app={stackClientApp}><StackTheme>
           {children}
           <Toaster />
-        </body>
+        </StackTheme></StackProvider></body>
       </html>
     );
   }
