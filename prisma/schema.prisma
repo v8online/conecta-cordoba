@@ -11,19 +11,106 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+enum UserType {
+  CLIENT
+  PROFESSIONAL
+}
+
+enum ConnectionStatus {
+  PENDING
+  ACCEPTED
+  COMPLETED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-  role          String?   // "CLIENT" or "PROFESSIONAL"
-  phone         String?
-  city          String?
-  profession    String?   // For professionals
-  description   String?   // For professionals
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id                  String               @id @default(dbgenerated("gen_random_uuid()"))
+  email               String               @unique
+  password            String?
+  name                String?
+  phone               String?
+  googleId            String?              @unique
+  userType            UserType
+  role                UserType?            @default(CLIENT)
+  createdAt           DateTime             @default(now()) @db.Timestamptz(6)
+  updatedAt           DateTime             @default(now()) @db.Timestamptz(6)
+  clientProfile       ClientProfile?
+  professionalProfile ProfessionalProfile?
+  payments            Payment[]
+  clientConnections   Connection[]         @relation("ClientConnections")
+  profConnections     Connection[]         @relation("ProfessionalConnections")
+  clientReviews       Review[]             @relation("ClientReviews")
+  profReviews         Review[]             @relation("ProfessionalReviews")
+}
+
+model ClientProfile {
+  id       String  @id @default(dbgenerated("gen_random_uuid()"))
+  userId   String  @unique
+  location String?
+  zone     String?
+  address  String?
+  phone    String?
+  user     User    @relation(fields: [userId], references: [id])
+}
+
+model ProfessionalProfile {
+  id          String  @id @default(dbgenerated("gen_random_uuid()"))
+  userId      String  @unique
+  profession  String
+  description String?
+  experience  Int?
+  location    String?
+  zone        String?
+  available   Boolean @default(true)
+  address     String?
+  phone       String?
+  user        User    @relation(fields: [userId], references: [id])
+}
+
+model Connection {
+  id             String           @id @default(dbgenerated("gen_random_uuid()"))
+  clientId       String
+  professionalId String
+  status         ConnectionStatus @default(PENDING)
+  requestDate    DateTime         @default(now()) @db.Timestamptz(6)
+  acceptedDate   DateTime?        @db.Timestamptz(6)
+  completedDate  DateTime?        @db.Timestamptz(6)
+  description    String?
+  client         User             @relation("ClientConnections", fields: [clientId], references: [id])
+  professional   User             @relation("ProfessionalConnections", fields: [professionalId], references: [id])
+  payment        Payment?
+  review         Review?
+}
+
+model Payment {
+  id            String        @id @default(dbgenerated("gen_random_uuid()"))
+  connectionId  String        @unique
+  userId        String
+  amount        Float
+  status        PaymentStatus @default(PENDING)
+  paymentDate   DateTime?     @db.Timestamptz(6)
+  mercadopagoId String?
+  connection    Connection    @relation(fields: [connectionId], references: [id])
+  user          User          @relation(fields: [userId], references: [id])
+}
+
+model Review {
+  id             String     @id @default(dbgenerated("gen_random_uuid()"))
+  clientId       String
+  professionalId String
+  connectionId   String     @unique
+  rating         Int
+  comment        String?
+  createdAt      DateTime   @default(now()) @db.Timestamptz(6)
+  client         User       @relation("ClientReviews", fields: [clientId], references: [id])
+  professional   User       @relation("ProfessionalReviews", fields: [professionalId], references: [id])
+  connection     Connection @relation(fields: [connectionId], references: [id])
 }
 
 model City {

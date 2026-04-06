@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const validatedData = schema.parse(body)
 
-    // Upsert user by googleId or email
+    // Upsert user by email
     const user = await db.user.upsert({
       where: { email: validatedData.email },
       update: {
@@ -28,6 +28,7 @@ export async function POST(request: NextRequest) {
         name: validatedData.name,
         email: validatedData.email,
         googleId: validatedData.googleId,
+        userType: "CLIENT",
         role: "CLIENT",
       },
     })

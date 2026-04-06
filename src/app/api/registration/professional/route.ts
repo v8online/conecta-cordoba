@@ -20,13 +20,15 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const data = schema.parse(body)
 
-    // Upsert: crea o actualiza el usuario por email/googleId
+    // Upsert: crea o actualiza el usuario por email
     const user = await db.user.upsert({
       where: { email: data.email },
       update: {
         name: data.name,
         phone: data.phone,
         googleId: data.googleId,
+        userType: "PROFESSIONAL",
+        role: "PROFESSIONAL",
       },
       create: {
         name: data.name,
@@ -34,16 +36,9 @@ export async function POST(request: NextRequest) {
         phone: data.phone,
         googleId: data.googleId,
         userType: "PROFESSIONAL",
+        role: "PROFESSIONAL",
       }
     })
-
-    // Si el usuario existe pero era CLIENT, actualizar a PROFESSIONAL
-    if (user.userType !== "PROFESSIONAL") {
-      await db.user.update({
-        where: { id: user.id },
-        data: { userType: "PROFESSIONAL" }
-      })
-    }
 
     // Upsert del perfil profesional
     const profile = await db.professionalProfile.upsert({
