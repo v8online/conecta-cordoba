@@ -52,7 +52,31 @@ model ProfessionalProfile {
   address     String?
   phone       String?
   available   Boolean @default(true)
+  cityId      String?
+  tradeId     String?
+  city        City?   @relation(fields: [cityId], references: [id])
+  trade       Trade?  @relation(fields: [tradeId], references: [id])
   user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model City {
+  id           String                @id @default(cuid())
+  name         String                @unique
+  department   String
+  region       String
+  population   Int?
+  createdAt    DateTime              @default(now())
+  professionals ProfessionalProfile[]
+}
+
+model Trade {
+  id           String                @id @default(cuid())
+  name         String                @unique
+  category     String
+  description  String?
+  icon         String?
+  createdAt    DateTime              @default(now())
+  professionals ProfessionalProfile[]
 }
 
 model Connection {
@@ -73,15 +97,15 @@ model Connection {
 }
 
 model Payment {
-  id             String        @id @default(cuid())
-  connectionId   String
-  userId         String
-  amount         Float
-  status         PaymentStatus @default(PENDING)
-  paymentDate    DateTime?
-  mercadopagoId  String?
-  connection     Connection    @relation(fields: [connectionId], references: [id])
-  user           User          @relation(fields: [userId], references: [id])
+  id            String        @id @default(cuid())
+  connectionId  String
+  userId        String
+  amount        Float
+  status        PaymentStatus @default(PENDING)
+  paymentDate   DateTime?
+  mercadopagoId String?
+  connection    Connection    @relation(fields: [connectionId], references: [id])
+  user          User          @relation(fields: [userId], references: [id])
 }
 
 model Review {
