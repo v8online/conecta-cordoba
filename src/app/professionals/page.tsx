@@ -18,12 +18,8 @@ interface Professional {
     email: string
     phone: string
   }
-  trade: {
-    name: string
-  }
-  city: {
-    name: string
-  }
+  profession: string
+  location: string
   description: string
   experience: number
   available: boolean
@@ -116,7 +112,6 @@ export default function ProfessionalsPage() {
                     <SelectItem value="Plomero">Plomero</SelectItem>
                     <SelectItem value="Albañil">Albañil</SelectItem>
                     <SelectItem value="Mecánico de motos">Mecánico de motos</SelectItem>
-                    {/* Más oficios se cargarán dinámicamente en una versión real */}
                   </SelectContent>
                 </Select>
               </div>
@@ -162,7 +157,7 @@ export default function ProfessionalsPage() {
                     <CardTitle className="text-lg">{pro.user.name}</CardTitle>
                     <CardDescription className="flex items-center gap-1">
                       <Briefcase className="w-3 h-3" />
-                      {pro.trade.name}
+                      {pro.profession}
                     </CardDescription>
                   </div>
                 </CardHeader>
@@ -173,7 +168,7 @@ export default function ProfessionalsPage() {
                   <div className="flex flex-wrap gap-2 mb-4">
                     <Badge variant="secondary" className="flex items-center gap-1">
                       <MapPin className="w-3 h-3" />
-                      {pro.city.name}
+                      {pro.location}
                     </Badge>
                     <Badge variant="outline">
                       {pro.experience} años exp.

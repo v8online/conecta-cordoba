@@ -4,35 +4,32 @@ import { db } from "@/lib/db"
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
-    const profession = searchParams.get("profession")
-    const location = searchParams.get("location")
+    const profession = searchParams.get("trade") || searchParams.get("profession")
+    const location = searchParams.get("city") || searchParams.get("location")
     const zone = searchParams.get("zone")
-    const search = searchParams.get("search")
+    const search = searchParams.get("q") || searchParams.get("search")
 
     // Construir la consulta base
     let whereClause: any = {
-      available: true,
-      user: {
-        // Excluir usuarios bloqueados o inactivos si es necesario
-      }
+      available: true
     }
 
     // Aplicar filtros
-    if (profession) {
+    if (profession && profession !== 'all') {
       whereClause.profession = {
         contains: profession,
         mode: "insensitive"
       }
     }
 
-    if (location) {
+    if (location && location !== 'all') {
       whereClause.location = {
         contains: location,
         mode: "insensitive"
       }
     }
 
-    if (zone) {
+    if (zone && zone !== 'all') {
       whereClause.zone = zone
     }
 
@@ -82,11 +79,6 @@ export async function GET(request: NextRequest) {
       },
       orderBy: [
         {
-          reviews: {
-            _count: "desc"
-          }
-        },
-        {
           experience: "desc"
         }
       ]
@@ -94,16 +86,18 @@ export async function GET(request: NextRequest) {
 
     // Calcular rating promedio y contar reseñas
     const professionalsWithStats = professionals.map(professional => {
-      const reviews = professional.reviews
-      const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0)
+      const reviews = professional.reviews || []
+      const totalRating = reviews.reduce((sum, review) => sum + (review.rating || 0), 0)
       const averageRating = reviews.length > 0 ? totalRating / reviews.length : 0
       const reviewCount = reviews.length
 
       return {
         id: professional.id,
-        name: professional.user.name,
-        email: professional.user.email,
-        phone: professional.user.phone,
+        user: {
+          name: professional.user.name,
+          email: professional.user.email,
+          phone: professional.user.phone,
+        },
         profession: professional.profession,
         description: professional.description,
         experience: professional.experience,
@@ -116,10 +110,8 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    return NextResponse.json({
-      professionals: professionalsWithStats,
-      total: professionalsWithStats.length
-    })
+    // Devolver array directo para compatibilidad con el frontend
+    return NextResponse.json(professionalsWithStats)
 
   } catch (error) {
     console.error("Error al obtener profesionales:", error)
