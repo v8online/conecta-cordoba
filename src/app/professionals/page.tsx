@@ -11,229 +11,92 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Search, MapPin, Star, Phone, Mail, Briefcase, Filter, ArrowLeft } from "lucide-react"
 import Link from "next/link"
 
-const professions = [
-  "Albañil", "Carpintero", "Plomero", "Electricista", "Mecánico de autos",
-  "Mecánico de motos", "Mecánico (general)", "Panadero", "Carnicero",
-  "Pescador", "Soldador", "Herrero", "Gasista", "Cerrajero", "Pintor",
-  "Tapicero", "Jardinero", "Chofer", "Camionero", "Estilista/Peluquero",
-  "Sastre", "Modista", "Zapatero", "Fotógrafo", "Vidriero", "Cocinero",
-  "Repostero", "Técnico electrónico", "Técnico en refrigeración",
-  "Maquinista", "Tornero", "Operador de fábrica", "Montador de cristales y vidrios",
-  "Instalador de alarmas", "Montador de paneles solares", "Auxiliar de limpieza",
-  "Cadete", "Cajero", "Auxiliar administrativo", "Auxiliar contable",
-  "Auxiliar de jardinería", "Sereno/Personal de seguridad",
-  "Auxiliar de enfermería", "Auxiliar de cocina", "Operario logístico", 
-  "Abogado", "Quesero", "Ganadero", "Gomero", "Depiladora",
-  "Lavador de Autos a Domicilio", "Manicura", "Mantenimiento de Piletas",
-  "Podador en Altura", "Guía Turístico de Montaña", "Alquiler de Caballos para Caminatas", "Escribano",
-  "Gestor del Automotor"
-]
-
-const cordobaZones = [
-  "Achiras", "Adelia María", "Agua de Oro", "Alta Gracia", "Altos de Chipión",
-  "Anisacate", "Arroyito", "Bell Ville", "Colonia Caroya", "Cosquín",
-  "Cruz del Eje", "Deán Funes", "Estación Juárez Celman", "General Cabrera",
-  "General Deheza", "Jesús María", "Laboulaye", "Las Varillas", "Leones",
-  "Malagueño", "Malvinas Argentinas", "Marcos Juárez", "Mendiolaza", "Mina Clavero",
-  "Montecristo", "Morteros", "Oliva", "Oncativo", "Pilar", "Río Ceballos",
-  "Río Cuarto", "Río Primero", "Río Segundo", "Río Tercero", "Saldán",
-  "San Francisco", "Santa María de Punilla", "Santa Rosa de Calamuchita", "Tanti",
-  "Unquillo", "Vicuña Mackenna", "Villa Allende", "Villa Carlos Paz", "Villa Dolores",
-  "Villa General Belgrano", "Villa María", "Villa Nueva", "Villa de Soto",
-  "Villa del Rosario", "Villa del Totoral"
-]
-
 interface Professional {
   id: string
-  name: string
-  profession: string
+  user: {
+    name: string
+    email: string
+    phone: string
+  }
+  trade: {
+    name: string
+  }
+  city: {
+    name: string
+  }
   description: string
   experience: number
-  location: string
-  zone: string
-  phone: string
-  email: string
   available: boolean
-  rating: number
-  reviewCount: number
 }
 
 export default function ProfessionalsPage() {
   const [searchTerm, setSearchTerm] = useState("")
-  const [selectedProfession, setSelectedProfession] = useState("")
-  const [selectedZone, setSelectedZone] = useState("")
+  const [selectedTrade, setSelectedTrade] = useState("all")
+  const [selectedCity, setSelectedCity] = useState("all")
   const [professionals, setProfessionals] = useState<Professional[]>([])
-  const [filteredProfessionals, setFilteredProfessionals] = useState<Professional[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
-  // Simulación de datos - en una aplicación real, esto vendría de la API
-  useEffect(() => {
-    const mockProfessionals: Professional[] = [
-      {
-        id: "1",
-        name: "Juan Pérez",
-        profession: "Electricista",
-        description: "Especialista en instalaciones eléctricas residenciales y comerciales. Más de 10 años de experiencia.",
-        experience: 10,
-        location: "Córdoba Capital",
-        zone: "city",
-        phone: "3511234567",
-        email: "juan.perez@email.com",
-        available: true,
-        rating: 4.8,
-        reviewCount: 23
-      },
-      {
-        id: "2",
-        name: "María González",
-        profession: "Plomero",
-        description: "Experta en reparaciones de cañerías, instalaciones sanitarias y sistemas de calefacción.",
-        experience: 8,
-        location: "Villa Carlos Paz",
-        zone: "city",
-        phone: "3517654321",
-        email: "maria.gonzalez@email.com",
-        available: true,
-        rating: 4.9,
-        reviewCount: 31
-      },
-      {
-        id: "3",
-        name: "Carlos Rodríguez",
-        profession: "Albañil",
-        description: "Construcción y reparaciones en general. Especializado en trabajos de albañilería fina.",
-        experience: 15,
-        location: "Río Cuarto",
-        zone: "city",
-        phone: "3581123456",
-        email: "carlos.rodriguez@email.com",
-        available: false,
-        rating: 4.7,
-        reviewCount: 18
-      },
-      {
-        id: "4",
-        name: "Ana Martínez",
-        profession: "Jardinero",
-        description: "Diseño y mantenimiento de jardines. Paisajista con experiencia en jardinería orgánica.",
-        experience: 6,
-        location: "Alta Gracia",
-        zone: "city",
-        phone: "3519876543",
-        email: "ana.martinez@email.com",
-        available: true,
-        rating: 4.6,
-        reviewCount: 12
-      },
-      {
-        id: "5",
-        name: "Luis Sánchez",
-        profession: "Mecánico de autos",
-        description: "Mecánica automotriz integral. Especializado en diagnósticos electrónicos y reparaciones.",
-        experience: 12,
-        location: "Villa María",
-        zone: "city",
-        phone: "3531234567",
-        email: "luis.sanchez@email.com",
-        available: true,
-        rating: 4.5,
-        reviewCount: 27
-      }
-    ]
-    
-    setProfessionals(mockProfessionals)
-    setFilteredProfessionals(mockProfessionals)
-    setIsLoading(false)
-  }, [])
+  const fetchProfessionals = async () => {
+    setIsLoading(true)
+    try {
+      const params = new URLSearchParams()
+      if (searchTerm) params.append('q', searchTerm)
+      if (selectedTrade !== 'all') params.append('trade', selectedTrade)
+      if (selectedCity !== 'all') params.append('city', selectedCity)
 
-  useEffect(() => {
-    let filtered = professionals
-
-    if (searchTerm) {
-      filtered = filtered.filter(professional =>
-        professional.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        professional.profession.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        professional.description.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+      const response = await fetch(`/api/professionals?${params.toString()}`)
+      const data = await response.json()
+      setProfessionals(data)
+    } catch (error) {
+      console.error("Error fetching professionals:", error)
+    } finally {
+      setIsLoading(false)
     }
-
-    if (selectedProfession) {
-      filtered = filtered.filter(professional =>
-        professional.profession === selectedProfession
-      )
-    }
-
-    if (selectedZone) {
-      filtered = filtered.filter(professional =>
-        professional.location === selectedZone
-      )
-    }
-
-    setFilteredProfessionals(filtered)
-  }, [searchTerm, selectedProfession, selectedZone, professionals])
-
-  const handleContact = (professional: Professional) => {
-    alert(`Contactar a ${professional.name}\nTel: ${professional.phone}\nEmail: ${professional.email}`)
   }
 
-  const renderStars = (rating: number) => {
-    return Array.from({ length: 5 }, (_, i) => (
-      <Star
-        key={i}
-        className={`h-4 w-4 ${
-          i < Math.floor(rating) ? "text-yellow-400 fill-current" : "text-gray-300"
-        }`}
-      />
-    ))
-  }
+  useEffect(() => {
+    fetchProfessionals()
+  }, [selectedTrade, selectedCity])
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p>Cargando profesionales...</p>
-        </div>
-      </div>
-    )
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault()
+    fetchProfessionals()
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 pb-12">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <Link href="/" className="flex items-center text-blue-600 hover:text-blue-700">
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                <span className="text-xl font-bold">ConectaCórdoba</span>
-              </Link>
-            </div>
-            <nav className="flex space-x-4">
-              <Link href="/register/client">
-                <Button variant="ghost">Registrarme</Button>
-              </Link>
-            </nav>
+      <header className="bg-white border-b sticky top-0 z-10">
+        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2 text-primary font-bold text-xl">
+            <ArrowLeft className="w-5 h-5" />
+            ConectaCórdoba
+          </Link>
+          <div className="flex items-center gap-4">
+            <Button variant="outline" size="sm" asChild>
+              <Link href="/register/client">Registrarme</Link>
+            </Button>
           </div>
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Search and Filters */}
+      <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-6">Buscar Profesionales</h1>
-          
-          <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-            <div className="grid md:grid-cols-4 gap-4">
+          <h1 className="text-3xl font-bold mb-2">Buscar Profesionales</h1>
+          <p className="text-muted-foreground">Encuentra expertos locales en toda la provincia de Córdoba</p>
+        </div>
+
+        {/* Filters Section */}
+        <Card className="mb-8">
+          <CardContent className="pt-6">
+            <form onSubmit={handleSearch} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
               <div className="space-y-2">
                 <Label htmlFor="search">Buscar</Label>
                 <div className="relative">
-                  <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                  <Input
-                    id="search"
-                    type="text"
-                    placeholder="Nombre, profesión..."
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input 
+                    id="search" 
+                    placeholder="Nombre o descripción..." 
                     className="pl-10"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
@@ -242,142 +105,97 @@ export default function ProfessionalsPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="profession">Profesión</Label>
-                <Select value={selectedProfession} onValueChange={setSelectedProfession}>
+                <Label>Oficio</Label>
+                <Select value={selectedTrade} onValueChange={setSelectedTrade}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Todas las profesiones" />
+                    <SelectValue placeholder="Todos los oficios" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Todas las profesiones</SelectItem>
-                    {professions.map(profession => (
-                      <SelectItem key={profession} value={profession}>{profession}</SelectItem>
-                    ))}
+                    <SelectItem value="all">Todos los oficios</SelectItem>
+                    <SelectItem value="Electricista">Electricista</SelectItem>
+                    <SelectItem value="Plomero">Plomero</SelectItem>
+                    <SelectItem value="Albañil">Albañil</SelectItem>
+                    <SelectItem value="Mecánico de motos">Mecánico de motos</SelectItem>
+                    {/* Más oficios se cargarán dinámicamente en una versión real */}
                   </SelectContent>
                 </Select>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="zone">Zona</Label>
-                <Select value={selectedZone} onValueChange={setSelectedZone}>
+                <Label>Ciudad</Label>
+                <Select value={selectedCity} onValueChange={setSelectedCity}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Todas las zonas" />
+                    <SelectValue placeholder="Todas las ciudades" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Todas las zonas</SelectItem>
-                    {cordobaZones.map(zone => (
-                      <SelectItem key={zone} value={zone}>{zone}</SelectItem>
-                    ))}
+                    <SelectItem value="all">Todas las ciudades</SelectItem>
+                    <SelectItem value="Córdoba">Córdoba Capital</SelectItem>
+                    <SelectItem value="Villa Carlos Paz">Villa Carlos Paz</SelectItem>
+                    <SelectItem value="Río Cuarto">Río Cuarto</SelectItem>
+                    <SelectItem value="Villa Dolores">Villa Dolores</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
-              <div className="space-y-2">
-                <Label>&nbsp;</Label>
-                <Button 
-                  variant="outline" 
-                  className="w-full"
-                  onClick={() => {
-                    setSearchTerm("")
-                    setSelectedProfession("")
-                    setSelectedZone("")
-                  }}
-                >
-                  <Filter className="mr-2 h-4 w-4" />
+              <Button type="submit" className="w-full">
+                <Search className="w-4 h-4 mr-2" />
+                Buscar ahora
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+
+        {/* Results */}
+        {isLoading ? (
+          <div className="flex justify-center py-20">
+            <p className="text-lg text-muted-foreground">Cargando profesionales...</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {professionals.map((pro) => (
+              <Card key={pro.id} className="hover:shadow-md transition-shadow">
+                <CardHeader className="flex flex-row items-center gap-4">
+                  <Avatar className="w-12 h-12">
+                    <AvatarFallback>{pro.user.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <CardTitle className="text-lg">{pro.user.name}</CardTitle>
+                    <CardDescription className="flex items-center gap-1">
+                      <Briefcase className="w-3 h-3" />
+                      {pro.trade.name}
+                    </CardDescription>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm line-clamp-3 mb-4 min-h-[3rem]">
+                    {pro.description || "Sin descripción disponible."}
+                  </p>
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    <Badge variant="secondary" className="flex items-center gap-1">
+                      <MapPin className="w-3 h-3" />
+                      {pro.city.name}
+                    </Badge>
+                    <Badge variant="outline">
+                      {pro.experience} años exp.
+                    </Badge>
+                  </div>
+                  <Button className="w-full" asChild>
+                    <Link href={`/professionals/${pro.id}`}>Ver Perfil y Contactar</Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+            {professionals.length === 0 && (
+              <div className="col-span-full text-center py-20 bg-white rounded-lg border">
+                <p className="text-xl text-muted-foreground mb-4">No se encontraron profesionales.</p>
+                <Button variant="outline" onClick={() => { setSearchTerm(""); setSelectedTrade("all"); setSelectedCity("all"); }}>
                   Limpiar filtros
                 </Button>
               </div>
-            </div>
-          </div>
-
-          {/* Results */}
-          <div className="mb-4">
-            <p className="text-gray-600">
-              {filteredProfessionals.length} profesional{filteredProfessionals.length !== 1 ? 'es' : ''} encontrado{filteredProfessionals.length !== 1 ? 's' : ''}
-            </p>
-          </div>
-        </div>
-
-        {/* Professionals List */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredProfessionals.map((professional) => (
-            <Card key={professional.id} className="hover:shadow-md transition-shadow">
-              <CardHeader>
-                <div className="flex items-start space-x-4">
-                  <Avatar className="h-12 w-12">
-                    <AvatarImage src={`/placeholder-avatar-${professional.id}.jpg`} />
-                    <AvatarFallback>
-                      {professional.name.split(' ').map(n => n[0]).join('')}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <CardTitle className="text-lg">{professional.name}</CardTitle>
-                    <CardDescription className="flex items-center">
-                      <Briefcase className="h-4 w-4 mr-1" />
-                      {professional.profession}
-                    </CardDescription>
-                    <div className="flex items-center mt-1">
-                      <div className="flex items-center">
-                        {renderStars(professional.rating)}
-                      </div>
-                      <span className="ml-2 text-sm text-gray-600">
-                        {professional.rating} ({professional.reviewCount} reseñas)
-                      </span>
-                    </div>
-                  </div>
-                  <Badge variant={professional.available ? "default" : "secondary"}>
-                    {professional.available ? "Disponible" : "Ocupado"}
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-600 mb-4 text-sm">
-                  {professional.description}
-                </p>
-                
-                <div className="space-y-2 mb-4">
-                  <div className="flex items-center text-sm text-gray-600">
-                    <MapPin className="h-4 w-4 mr-2" />
-                    {professional.location}
-                  </div>
-                  <div className="flex items-center text-sm text-gray-600">
-                    <Star className="h-4 w-4 mr-2" />
-                    {professional.experience} años de experiencia
-                  </div>
-                </div>
-
-                <div className="flex space-x-2">
-                  <Button 
-                    size="sm" 
-                    className="flex-1"
-                    onClick={() => handleContact(professional)}
-                    disabled={!professional.available}
-                  >
-                    <Phone className="mr-2 h-4 w-4" />
-                    Contactar
-                  </Button>
-                  <Button size="sm" variant="outline">
-                    <Mail className="h-4 w-4" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {filteredProfessionals.length === 0 && (
-          <div className="text-center py-12">
-            <div className="text-gray-400 mb-4">
-              <Search className="h-12 w-12 mx-auto" />
-            </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              No se encontraron profesionales
-            </h3>
-            <p className="text-gray-600">
-              Intenta ajustar tus filtros o términos de búsqueda
-            </p>
+            )}
           </div>
         )}
-      </div>
+      </main>
     </div>
   )
 }
