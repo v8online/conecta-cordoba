@@ -94,9 +94,9 @@ export async function GET(request: NextRequest) {
       return {
         id: professional.id,
         user: {
-          name: professional.user.name,
-          email: professional.user.email,
-          phone: professional.user.phone,
+          name: professional.user?.name || "Usuario",
+          email: professional.user?.email || "",
+          phone: professional.user?.phone || "",
         },
         profession: professional.profession,
         description: professional.description,
@@ -106,7 +106,7 @@ export async function GET(request: NextRequest) {
         available: professional.available,
         rating: parseFloat(averageRating.toFixed(1)),
         reviewCount,
-        createdAt: professional.user.createdAt
+        createdAt: professional.user?.createdAt
       }
     })
 

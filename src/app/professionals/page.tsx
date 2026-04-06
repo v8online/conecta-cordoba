@@ -42,9 +42,10 @@ export default function ProfessionalsPage() {
 
       const response = await fetch(`/api/professionals?${params.toString()}`)
       const data = await response.json()
-      setProfessionals(data)
+      setProfessionals(Array.isArray(data) ? data : [])
     } catch (error) {
       console.error("Error fetching professionals:", error)
+      setProfessionals([])
     } finally {
       setIsLoading(false)
     }
