@@ -1,6 +1,6 @@
 "use client"
 import { useState } from "react"
-import { useStackApp } from "@stackframe/stack"
+import { supabase } from "@/lib/supabase"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -20,7 +20,6 @@ const cordobaCities = [
 ]
 
 export default function RegisterClient() {
-  const app = useStackApp()
   const router = useRouter()
   const [step, setStep] = useState<"login" | "profile">("login")
   const [googleUser, setGoogleUser] = useState<{email: string, name: string, googleId: string} | null>(null)
@@ -35,22 +34,34 @@ export default function RegisterClient() {
   const handleGoogleLogin = async () => {
     setIsLoading(true)
     try {
-      const result = await app.signInWithOAuth("google")
-      if (result && result.user) {
-        setGoogleUser({
-          email: result.user.primaryEmail || "",
-          name: result.user.displayName || "",
-          googleId: result.user.id
-        })
-        setStep("profile")
-        toast.success("¡Google conectado! Completá tu perfil.")
-      }
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/register/client?step=profile`
+        }
+      })
+      if (error) throw error
     } catch (error: any) {
       toast.error("Error al conectar con Google. Intentá de nuevo.")
-    } finally {
       setIsLoading(false)
     }
   }
+
+  // Effect to handle redirect back from Google
+  useState(() => {
+    const checkUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (session?.user) {
+        setGoogleUser({
+          email: session.user.email || "",
+          name: session.user.user_metadata.full_name || "",
+          googleId: session.user.id
+        })
+        setStep("profile")
+      }
+    }
+    checkUser()
+  })
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
